@@ -2,6 +2,7 @@ export const weddingData = {
   couple: ["Santhosh", "Rithikha"],
   weddingStart: "2026-09-12T09:00:00",
   weddingDate: "12 & 13 September 2026",
+  heroLabel: "A Tamil Brahmin Wedding Invitation",
   families: ["Santhosh & family", "Rithikha & family"],
   invitation: {
     sanskrit: "समानी व आकूतिः\nसमाना हृदयानि वः",
@@ -56,9 +57,9 @@ export const weddingData = {
         },
         {
           time: "Evening",
-          title: "Reception",
+          title: "Nalangu",
           description:
-            "A festive evening to celebrate, connect, and share in the joy of the day.",
+            "A joyful post-wedding ritual of play, laughter, and blessings shared with family.",
         },
       ],
     },
@@ -92,6 +93,12 @@ export const weddingData = {
       title: "Reception",
       description:
         "A joyful social celebration where the newlyweds are introduced to the wider circle of family and friends, who shower them with blessings.",
+    },
+    {
+      tamil: "நலங்கு",
+      title: "Nalangu",
+      description:
+        "A light-hearted ritual after the wedding, filled with playful games, turmeric, and blessings as both families welcome the couple into their new life together.",
     },
   ],
   people: [
