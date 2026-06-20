@@ -174,6 +174,12 @@ a {
   text-transform: uppercase;
 }
 
+.hero__overline {
+  max-width: 32rem;
+  letter-spacing: 0.1em;
+  text-transform: none;
+}
+
 .hero h1 {
   display: flex;
   flex-direction: column;
@@ -780,8 +786,8 @@ h2 {
 
   .hero__overline {
     margin-top: 10px;
-    font-size: 9px;
-    letter-spacing: 0.24em;
+    font-size: 10px;
+    letter-spacing: 0.08em;
   }
 
   .hero h1 {

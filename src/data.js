@@ -2,7 +2,7 @@ export const weddingData = {
   couple: ["Santhosh", "Rithikha"],
   weddingStart: "2026-09-12T09:00:00",
   weddingDate: "12 & 13 September 2026",
-  heroLabel: "A Tamil Brahmin Wedding Invitation",
+  heroLabel: "With love in our hearts, we invite you to celebrate our wedding",
   families: ["Santhosh & family", "Rithikha & family"],
   invitation: {
     sanskrit: "समानी व आकूतिः\nसमाना हृदयानि वः",
