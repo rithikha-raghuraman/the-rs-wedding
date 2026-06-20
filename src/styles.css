@@ -539,8 +539,14 @@ p {
 }
 
 @media (max-width: 640px) {
+  .hero {
+    min-height: 100svh;
+    padding: 1rem;
+  }
+
   .topbar {
     flex-direction: column;
+    padding: 1.25rem 1rem 0;
   }
 
   .topbar__nav {
@@ -549,7 +555,78 @@ p {
   }
 
   .hero__content {
-    padding-top: 9rem;
+    width: 100%;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    padding: 7.25rem 0 1rem;
+  }
+
+  .hero-frame {
+    width: 100%;
+    margin: 0 auto;
+    padding: 1.35rem 1rem;
+  }
+
+  .hero-frame__label,
+  .section__kicker,
+  .eyebrow {
+    margin-bottom: 0.65rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+  }
+
+  .journey {
+    gap: 0.45rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .journey__chip {
+    padding: 0.45rem 0.6rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+  }
+
+  h1 {
+    font-size: 3.45rem;
+    line-height: 0.9;
+  }
+
+  .hero__lede {
+    margin-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .countdown {
+    gap: 0.55rem;
+    margin-top: 1.25rem;
+    padding: 0.65rem;
+  }
+
+  .countdown__item {
+    padding: 0.65rem 0.35rem;
+  }
+
+  .countdown__item strong {
+    font-size: 1.65rem;
+  }
+
+  .countdown__item span {
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+  }
+
+  .hero__actions {
+    gap: 0.6rem;
+    margin-top: 1.15rem;
+  }
+
+  .hero__actions .button {
+    flex: 1 1 10rem;
+    min-height: 3rem;
+    padding: 0 0.7rem;
+    font-size: 0.9rem;
   }
 
   .hero-frame,
