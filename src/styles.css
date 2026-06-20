@@ -540,8 +540,14 @@ p {
 
 @media (max-width: 640px) {
   .hero {
+    height: 100vh;
     min-height: 100svh;
-    padding: 1rem;
+    height: 100svh;
+    padding:
+      max(1rem, env(safe-area-inset-top))
+      max(1rem, env(safe-area-inset-right))
+      max(1rem, env(safe-area-inset-bottom))
+      max(1rem, env(safe-area-inset-left));
   }
 
   .topbar {
@@ -556,7 +562,8 @@ p {
 
   .hero__content {
     width: 100%;
-    min-height: 100svh;
+    min-height: 0;
+    height: 100%;
     display: flex;
     align-items: center;
     padding: 7.25rem 0 1rem;
