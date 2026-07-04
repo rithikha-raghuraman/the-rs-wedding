@@ -2,13 +2,15 @@ import { neon } from "@neondatabase/serverless";
 import crypto from "node:crypto";
 
 const getSql = () => {
-  if (!process.env.DATABASE_URL) {
-    const error = new Error("DATABASE_URL is not configured");
+  const databaseUrl = process.env.RSVP_DB_DATABASE_URL || process.env.DATABASE_URL;
+
+  if (!databaseUrl) {
+    const error = new Error("RSVP_DB_DATABASE_URL or DATABASE_URL is not configured");
     error.code = "DATABASE_URL_MISSING";
     throw error;
   }
 
-  return neon(process.env.DATABASE_URL);
+  return neon(databaseUrl);
 };
 
 const ensureSchema = async (sql) => {
