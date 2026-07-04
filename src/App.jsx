@@ -1130,7 +1130,7 @@ function App() {
         <section className="section key-events" id="events">
           <div className="section__narrow" data-reveal>
             <p className="eyebrow">Join us for</p>
-            <div className="key-events__list">
+            <div className={`key-events__list${keyEvents.length === 1 ? " key-events__list--single" : ""}`}>
               {keyEvents.map((event) => (
                 <article className="key-event" key={event.title}>
                   <h2>{event.title}</h2>

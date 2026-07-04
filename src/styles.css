@@ -455,6 +455,11 @@ a {
   gap: 16px;
 }
 
+.key-events__list--single {
+  grid-template-columns: minmax(280px, 420px);
+  justify-content: center;
+}
+
 .key-event {
   padding: 26px 22px 24px;
   border: 1px solid rgba(189, 150, 72, 0.24);
@@ -971,8 +976,12 @@ h2 {
   border-radius: 28px;
 }
 
+.admin-table-card + .admin-table-card {
+  margin-top: 28px;
+}
+
 .admin-form-card {
-  margin-bottom: 18px;
+  margin-bottom: 30px;
   overflow: visible;
 }
 
