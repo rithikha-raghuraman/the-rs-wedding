@@ -21,6 +21,20 @@ export const weddingData = {
       time: "Muhurtham · 9:00 - 10:30 AM",
     },
   ],
+  rsvpEvents: [
+    {
+      id: "reception",
+      title: "Reception",
+      date: "September 12th",
+      time: "7:00 - 9:00 PM",
+    },
+    {
+      id: "wedding",
+      title: "Wedding / Muhurtham",
+      date: "September 13th",
+      time: "9:00 - 10:30 AM",
+    },
+  ],
   invitation: {
     sanskrit: "समानी व आकूतिः\nसमाना हृदयानि वः",
     transliteration: "samani va akutih · samana hridayani vah",

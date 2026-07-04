@@ -187,11 +187,192 @@ function VenuePin() {
 
 const menuItems = [
   { href: "#top", label: "Home" },
-  { href: "#invitation", label: "Invitation" },
   { href: "#events", label: "Events" },
-  { href: "#venue", label: "Venue" },
+  { href: "#venue", label: "Venue & RSVP" },
   { href: "#rituals", label: "Rituals" },
 ];
+
+const emptyRsvp = {
+  id: "",
+  name: "",
+  phone: "",
+  guestCount: "1",
+  events: {
+    reception: true,
+    wedding: true,
+  },
+};
+
+function RsvpCard() {
+  const [form, setForm] = useState(emptyRsvp);
+  const [savedRsvp, setSavedRsvp] = useState(null);
+  const [isEditing, setIsEditing] = useState(true);
+  const [status, setStatus] = useState("idle");
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const savedId = window.localStorage.getItem("weddingRsvpId");
+
+    if (!savedId) {
+      return undefined;
+    }
+
+    let isMounted = true;
+    setStatus("loading");
+
+    fetch(`/api/rsvp?id=${encodeURIComponent(savedId)}`)
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error("Unable to load saved RSVP.");
+        }
+
+        return response.json();
+      })
+      .then(({ rsvp }) => {
+        if (!isMounted) {
+          return;
+        }
+
+        setSavedRsvp(rsvp);
+        setForm({ ...rsvp, guestCount: String(rsvp.guestCount) });
+        setIsEditing(false);
+        setStatus("idle");
+      })
+      .catch(() => {
+        if (!isMounted) {
+          return;
+        }
+
+        window.localStorage.removeItem("weddingRsvpId");
+        setStatus("idle");
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const updateField = (field, value) => {
+    setForm((current) => ({ ...current, [field]: value }));
+  };
+
+  const updateEvent = (eventId) => {
+    setForm((current) => ({
+      ...current,
+      events: {
+        ...current.events,
+        [eventId]: !current.events[eventId],
+      },
+    }));
+  };
+
+  const saveRsvp = async (event) => {
+    event.preventDefault();
+    setStatus("saving");
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/rsvp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          guestCount: Number.parseInt(form.guestCount, 10),
+        }),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.error || "Unable to save RSVP.");
+      }
+
+      window.localStorage.setItem("weddingRsvpId", payload.rsvp.id);
+      setSavedRsvp(payload.rsvp);
+      setForm({ ...payload.rsvp, guestCount: String(payload.rsvp.guestCount) });
+      setIsEditing(false);
+      setStatus("idle");
+      setMessage("Your RSVP has been saved.");
+    } catch (error) {
+      setStatus("error");
+      setMessage(error.message || "Unable to save RSVP. Please try again.");
+    }
+  };
+
+  if (status === "loading") {
+    return (
+      <div className="rsvp-card">
+        <p className="rsvp-card__eyebrow">RSVP</p>
+        <h3>Checking your saved RSVP...</h3>
+      </div>
+    );
+  }
+
+  if (savedRsvp && !isEditing) {
+    return (
+      <div className="rsvp-card rsvp-card--saved">
+        <p className="rsvp-card__eyebrow">RSVP saved</p>
+        <h3>We have your response</h3>
+        <dl className="rsvp-summary">
+          <div><dt>Name</dt><dd>{savedRsvp.name}</dd></div>
+          <div><dt>Phone</dt><dd>{savedRsvp.phone}</dd></div>
+          <div><dt>Guests</dt><dd>{savedRsvp.guestCount}</dd></div>
+          {weddingData.rsvpEvents.map((rsvpEvent) => (
+            <div key={rsvpEvent.id}>
+              <dt>{rsvpEvent.title}</dt>
+              <dd>{savedRsvp.events[rsvpEvent.id] ? "Attending" : "Not attending"}</dd>
+            </div>
+          ))}
+        </dl>
+        <button className="button button--ghost" type="button" onClick={() => setIsEditing(true)}>
+          Edit RSVP
+        </button>
+        {message && <p className="rsvp-card__message">{message}</p>}
+      </div>
+    );
+  }
+
+  return (
+    <form className="rsvp-card" onSubmit={saveRsvp}>
+      <p className="rsvp-card__eyebrow">RSVP</p>
+      <h3>Will you be joining us?</h3>
+      <p className="rsvp-card__intro">Please let us know which celebrations you will attend.</p>
+
+      <label className="rsvp-field">
+        <span>Name</span>
+        <input value={form.name} onChange={(event) => updateField("name", event.target.value)} required />
+      </label>
+
+      <label className="rsvp-field">
+        <span>Phone number</span>
+        <input type="tel" value={form.phone} onChange={(event) => updateField("phone", event.target.value)} required />
+      </label>
+
+      <label className="rsvp-field">
+        <span>Number of guests</span>
+        <input type="number" min="1" max="20" value={form.guestCount} onChange={(event) => updateField("guestCount", event.target.value)} required />
+      </label>
+
+      <fieldset className="rsvp-events">
+        <legend>Events attending</legend>
+        {weddingData.rsvpEvents.map((rsvpEvent) => (
+          <label className="rsvp-event" key={rsvpEvent.id}>
+            <input type="checkbox" checked={form.events[rsvpEvent.id]} onChange={() => updateEvent(rsvpEvent.id)} />
+            <span>
+              <strong>{rsvpEvent.title}</strong>
+              <small>{rsvpEvent.date} · {rsvpEvent.time}</small>
+            </span>
+          </label>
+        ))}
+      </fieldset>
+
+      <button className="button" type="submit" disabled={status === "saving"}>
+        {status === "saving" ? "Saving..." : "Submit RSVP"}
+      </button>
+      {message && <p className={`rsvp-card__message${status === "error" ? " rsvp-card__message--error" : ""}`}>{message}</p>}
+    </form>
+  );
+}
 
 function FloatingMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -351,6 +532,7 @@ function App() {
               <p>{weddingData.venue.description}</p>
               <a className="button" href={weddingData.venue.directionsHref}><VenuePin />Get directions</a>
             </div>
+            <RsvpCard />
           </div>
         </section>
 
