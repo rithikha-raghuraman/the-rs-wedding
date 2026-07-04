@@ -374,6 +374,177 @@ function RsvpCard() {
   );
 }
 
+function AdminPortal() {
+  const [credentials, setCredentials] = useState({ username: "", password: "" });
+  const [token, setToken] = useState(() => window.localStorage.getItem("weddingAdminToken") || "");
+  const [status, setStatus] = useState(token ? "loading" : "idle");
+  const [message, setMessage] = useState("");
+  const [dashboard, setDashboard] = useState(null);
+
+  const logout = () => {
+    window.localStorage.removeItem("weddingAdminToken");
+    setToken("");
+    setDashboard(null);
+    setStatus("idle");
+  };
+
+  const loadDashboard = async (adminToken = token) => {
+    if (!adminToken) {
+      return;
+    }
+
+    setStatus("loading");
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/admin/rsvps", {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+      const payload = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          logout();
+        }
+
+        throw new Error(payload.error || "Unable to load RSVP data.");
+      }
+
+      setDashboard(payload);
+      setStatus("idle");
+    } catch (error) {
+      setStatus("error");
+      setMessage(error.message || "Unable to load RSVP data.");
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      loadDashboard(token);
+    }
+  }, [token]);
+
+  const login = async (event) => {
+    event.preventDefault();
+    setStatus("loading");
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+      });
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.error || "Unable to sign in.");
+      }
+
+      window.localStorage.setItem("weddingAdminToken", payload.token);
+      setToken(payload.token);
+    } catch (error) {
+      setStatus("error");
+      setMessage(error.message || "Unable to sign in.");
+    }
+  };
+
+  const formatDate = (value) => value ? new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value)) : "Not available";
+
+  if (!token) {
+    return (
+      <main className="admin-page">
+        <section className="admin-login">
+          <p className="admin-eyebrow">Private admin</p>
+          <h1>RSVP Dashboard</h1>
+          <p>Sign in to view guest responses and event totals.</p>
+          <form className="admin-card" onSubmit={login}>
+            <label className="rsvp-field">
+              <span>Username</span>
+              <input value={credentials.username} onChange={(event) => setCredentials((current) => ({ ...current, username: event.target.value }))} required />
+            </label>
+            <label className="rsvp-field">
+              <span>Password</span>
+              <input type="password" value={credentials.password} onChange={(event) => setCredentials((current) => ({ ...current, password: event.target.value }))} required />
+            </label>
+            <button className="button" type="submit" disabled={status === "loading"}>
+              {status === "loading" ? "Signing in..." : "Sign in"}
+            </button>
+            {message && <p className="admin-message">{message}</p>}
+          </form>
+        </section>
+      </main>
+    );
+  }
+
+  return (
+    <main className="admin-page">
+      <section className="admin-shell">
+        <header className="admin-header">
+          <div>
+            <p className="admin-eyebrow">Private admin</p>
+            <h1>RSVP Dashboard</h1>
+            <p>Track responses for Reception and Wedding / Muhurtham.</p>
+          </div>
+          <div className="admin-actions">
+            <button className="button button--ghost" type="button" onClick={() => loadDashboard()} disabled={status === "loading"}>Refresh</button>
+            <button className="button" type="button" onClick={logout}>Logout</button>
+          </div>
+        </header>
+
+        {message && <p className="admin-message">{message}</p>}
+
+        <div className="admin-stats">
+          <article><span>Total RSVPs</span><strong>{dashboard?.summary.totalRsvps ?? 0}</strong></article>
+          <article><span>Total Guests</span><strong>{dashboard?.summary.totalGuests ?? 0}</strong></article>
+          <article><span>Reception</span><strong>{dashboard?.summary.receptionGuests ?? 0}</strong></article>
+          <article><span>Wedding</span><strong>{dashboard?.summary.weddingGuests ?? 0}</strong></article>
+        </div>
+
+        <div className="admin-table-card">
+          <div className="admin-table-header">
+            <h2>Guest responses</h2>
+            <span>{status === "loading" ? "Loading..." : `${dashboard?.rsvps.length ?? 0} records`}</span>
+          </div>
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Guests</th>
+                  <th>Reception</th>
+                  <th>Wedding</th>
+                  <th>Updated</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dashboard?.rsvps.length ? dashboard.rsvps.map((rsvp) => (
+                  <tr key={rsvp.id}>
+                    <td>{rsvp.name}</td>
+                    <td>{rsvp.phone}</td>
+                    <td>{rsvp.guestCount}</td>
+                    <td>{rsvp.events.reception ? "Yes" : "No"}</td>
+                    <td>{rsvp.events.wedding ? "Yes" : "No"}</td>
+                    <td>{formatDate(rsvp.updatedAt)}</td>
+                  </tr>
+                )) : (
+                  <tr>
+                    <td colSpan="6">No RSVPs yet.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
 function FloatingMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [isCompact, setIsCompact] = useState(false);
@@ -449,6 +620,10 @@ function App() {
     window.addEventListener("scroll", updateParallax, { passive: true });
     return () => window.removeEventListener("scroll", updateParallax);
   }, []);
+
+  if (window.location.pathname === "/admin") {
+    return <AdminPortal />;
+  }
 
   return (
     <div className="invite-page">

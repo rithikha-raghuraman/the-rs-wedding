@@ -1,32 +1,5 @@
-import { neon } from "@neondatabase/serverless";
 import crypto from "node:crypto";
-
-const getSql = () => {
-  const databaseUrl = process.env.RSVP_DB_DATABASE_URL || process.env.DATABASE_URL;
-
-  if (!databaseUrl) {
-    const error = new Error("RSVP_DB_DATABASE_URL or DATABASE_URL is not configured");
-    error.code = "DATABASE_URL_MISSING";
-    throw error;
-  }
-
-  return neon(databaseUrl);
-};
-
-const ensureSchema = async (sql) => {
-  await sql`
-    CREATE TABLE IF NOT EXISTS rsvps (
-      id TEXT PRIMARY KEY,
-      guest_name TEXT NOT NULL,
-      phone TEXT NOT NULL,
-      guest_count INTEGER NOT NULL CHECK (guest_count BETWEEN 1 AND 20),
-      attending_reception BOOLEAN NOT NULL DEFAULT FALSE,
-      attending_wedding BOOLEAN NOT NULL DEFAULT FALSE,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    )
-  `;
-};
+import { ensureSchema, getSql, handleDatabaseError, serializeRsvp } from "./_lib/db.js";
 
 const normalizeBody = (body) => {
   if (typeof body === "string") {
@@ -35,17 +8,6 @@ const normalizeBody = (body) => {
 
   return body || {};
 };
-
-const serializeRsvp = (row) => ({
-  id: row.id,
-  name: row.guest_name,
-  phone: row.phone,
-  guestCount: row.guest_count,
-  events: {
-    reception: row.attending_reception,
-    wedding: row.attending_wedding,
-  },
-});
 
 const validateRsvp = (payload) => {
   const name = String(payload.name || "").trim();
@@ -101,7 +63,7 @@ export default async function handler(request, response) {
       }
 
       const rows = await sql`
-        SELECT id, guest_name, phone, guest_count, attending_reception, attending_wedding
+        SELECT id, guest_name, phone, guest_count, attending_reception, attending_wedding, created_at, updated_at
         FROM rsvps
         WHERE id = ${String(id)}
         LIMIT 1
@@ -146,7 +108,7 @@ export default async function handler(request, response) {
           attending_reception = EXCLUDED.attending_reception,
           attending_wedding = EXCLUDED.attending_wedding,
           updated_at = NOW()
-        RETURNING id, guest_name, phone, guest_count, attending_reception, attending_wedding
+        RETURNING id, guest_name, phone, guest_count, attending_reception, attending_wedding, created_at, updated_at
       `;
 
       return response.status(200).json({ rsvp: serializeRsvp(rows[0]) });
@@ -155,15 +117,6 @@ export default async function handler(request, response) {
     response.setHeader("Allow", "GET, POST");
     return response.status(405).json({ error: "Method not allowed." });
   } catch (error) {
-    console.error(error);
-
-    if (error.code === "DATABASE_URL_MISSING") {
-      return response.status(500).json({
-        error: "RSVP database is not configured in Vercel yet.",
-        code: "DATABASE_URL_MISSING",
-      });
-    }
-
-    return response.status(500).json({ error: "Something went wrong while saving the RSVP." });
+    return handleDatabaseError(error, response);
   }
 }

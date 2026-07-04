@@ -818,6 +818,180 @@ h2 {
   text-align: right;
 }
 
+.admin-page {
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 42px 22px;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(207, 111, 129, 0.16), transparent 34%),
+    radial-gradient(circle at 88% 12%, rgba(127, 139, 196, 0.18), transparent 32%),
+    linear-gradient(180deg, #fbf4ef, #f4ecf4);
+}
+
+.admin-login,
+.admin-shell {
+  width: min(100%, 1080px);
+  margin: 0 auto;
+}
+
+.admin-login {
+  display: grid;
+  min-height: calc(100svh - 84px);
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+}
+
+.admin-login > p,
+.admin-header p {
+  color: #6f5a52;
+}
+
+.admin-eyebrow {
+  margin: 0 0 12px;
+  color: #a84a5d !important;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.admin-page h1 {
+  margin: 0;
+  color: #3a2722;
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(2.8rem, 7vw, 5rem);
+  line-height: 0.95;
+}
+
+.admin-card,
+.admin-table-card,
+.admin-stats article {
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.62), rgba(255, 246, 242, 0.28));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), 0 18px 48px rgba(90, 45, 35, 0.1);
+  backdrop-filter: blur(18px) saturate(1.25);
+}
+
+.admin-card {
+  display: grid;
+  gap: 16px;
+  width: min(100%, 430px);
+  margin-top: 28px;
+  padding: 28px;
+  border-radius: 28px;
+  text-align: left;
+}
+
+.admin-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.admin-actions .button {
+  margin-top: 0;
+}
+
+.admin-message {
+  margin: 14px 0 0;
+  color: #9f2f34;
+  font-weight: 700;
+  text-align: center;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.admin-stats article {
+  display: grid;
+  gap: 8px;
+  padding: 22px;
+  border-radius: 24px;
+}
+
+.admin-stats span,
+.admin-table-header span {
+  color: #7c665d;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-stats strong {
+  color: #5b1f1f;
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  line-height: 1;
+}
+
+.admin-table-card {
+  overflow: hidden;
+  border-radius: 28px;
+}
+
+.admin-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 24px;
+  border-bottom: 1px solid rgba(189, 150, 72, 0.16);
+}
+
+.admin-table-header h2 {
+  margin: 0;
+  font-size: 30px;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 15px 18px;
+  border-bottom: 1px solid rgba(189, 150, 72, 0.12);
+  text-align: left;
+}
+
+.admin-table th {
+  color: #7c665d;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-table td {
+  color: #4f3932;
+  font-size: 14px;
+}
+
+.admin-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
 .section-heading {
   max-width: 560px;
   margin: 0 auto 44px;
@@ -1239,6 +1413,32 @@ h2 {
 
   .rsvp-summary dd {
     text-align: left;
+  }
+
+  .admin-page {
+    padding: 28px 16px;
+  }
+
+  .admin-header {
+    display: grid;
+    align-items: start;
+  }
+
+  .admin-actions {
+    justify-content: flex-start;
+  }
+
+  .admin-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-stats article {
+    padding: 18px;
+  }
+
+  .admin-table-header {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .closing {
