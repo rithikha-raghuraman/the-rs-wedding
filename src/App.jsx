@@ -1083,6 +1083,26 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const hash = window.location.hash;
+
+    if (!hash) {
+      return undefined;
+    }
+
+    const target = document.getElementById(hash.slice(1));
+
+    if (!target) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 60);
+
+    return () => window.clearTimeout(timeoutId);
+  }, []);
+
+  useEffect(() => {
     const inviteCode = new URLSearchParams(window.location.search).get("invite");
 
     if (!inviteCode) {
