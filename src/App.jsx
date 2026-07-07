@@ -237,8 +237,6 @@ function RsvpCard({ invite }) {
     setForm({
       ...emptyRsvp,
       name: invite.guestName || "",
-      phone: invite.phone || "",
-      email: invite.email || "",
       events: {
         reception: invite.invitedEvents.reception,
         wedding: invite.invitedEvents.wedding,
@@ -360,8 +358,6 @@ function RsvpCard({ invite }) {
         <h3>Thank you for RSVPing!</h3>
         <dl className="rsvp-summary">
           <div><dt>Name</dt><dd>{savedRsvp.name}</dd></div>
-          <div><dt>Phone</dt><dd>{savedRsvp.phone}</dd></div>
-          {savedRsvp.email && <div><dt>Email</dt><dd>{savedRsvp.email}</dd></div>}
           <div><dt>Guests</dt><dd>{savedRsvp.guestCount}</dd></div>
           {invitedRsvpEvents.map((rsvpEvent) => (
             <div key={rsvpEvent.id}>
@@ -387,16 +383,6 @@ function RsvpCard({ invite }) {
       <label className="rsvp-field">
         <span>Name</span>
         <input value={form.name} onChange={(event) => updateField("name", event.target.value)} required />
-      </label>
-
-      <label className="rsvp-field">
-        <span>Phone number</span>
-        <input type="tel" value={form.phone} onChange={(event) => updateField("phone", event.target.value)} required />
-      </label>
-
-      <label className="rsvp-field">
-        <span>Email</span>
-        <input type="email" value={form.email} onChange={(event) => updateField("email", event.target.value)} />
       </label>
 
       <label className="rsvp-field">

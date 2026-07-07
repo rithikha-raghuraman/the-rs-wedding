@@ -26,10 +26,6 @@ const validateRsvp = (payload) => {
     return { error: "Please enter your name." };
   }
 
-  if (!phone) {
-    return { error: "Please enter your phone number." };
-  }
-
   if (!Number.isInteger(guestCount) || guestCount < 1 || guestCount > 20) {
     return { error: "Please enter a guest count between 1 and 20." };
   }
@@ -136,7 +132,7 @@ export default async function handler(request, response) {
           ${rsvp.id},
           ${invitee.id},
           ${rsvp.name},
-          ${rsvp.phone},
+          ${rsvp.phone || invitee.phone || ""},
           ${rsvp.email || invitee.email || null},
           ${rsvp.guestCount},
           ${rsvp.reception},
