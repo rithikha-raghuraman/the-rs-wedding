@@ -40,7 +40,7 @@ export const ensureSchema = async (sql) => {
       guest_name TEXT NOT NULL,
       phone TEXT NOT NULL,
       email TEXT,
-      guest_count INTEGER NOT NULL CHECK (guest_count BETWEEN 1 AND 20),
+      guest_count INTEGER NOT NULL CHECK (guest_count BETWEEN 0 AND 20),
       attending_reception BOOLEAN NOT NULL DEFAULT FALSE,
       attending_wedding BOOLEAN NOT NULL DEFAULT FALSE,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -50,6 +50,8 @@ export const ensureSchema = async (sql) => {
 
   await sql`ALTER TABLE rsvps ADD COLUMN IF NOT EXISTS invitee_id UUID REFERENCES invitees(id) ON DELETE CASCADE`;
   await sql`ALTER TABLE rsvps ADD COLUMN IF NOT EXISTS email TEXT`;
+  await sql`ALTER TABLE rsvps DROP CONSTRAINT IF EXISTS rsvps_guest_count_check`;
+  await sql`ALTER TABLE rsvps ADD CONSTRAINT rsvps_guest_count_check CHECK (guest_count BETWEEN 0 AND 20)`;
   await sql`CREATE UNIQUE INDEX IF NOT EXISTS rsvps_invitee_id_unique ON rsvps(invitee_id) WHERE invitee_id IS NOT NULL`;
 };
 

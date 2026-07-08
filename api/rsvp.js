@@ -17,6 +17,7 @@ const validateRsvp = (payload) => {
   const guestCount = Number.parseInt(payload.guestCount, 10);
   const reception = Boolean(payload.events?.reception);
   const wedding = Boolean(payload.events?.wedding);
+  const wantsToAttend = payload.isAttending === undefined ? reception || wedding : Boolean(payload.isAttending);
 
   if (!inviteCode) {
     return { error: "This RSVP needs a personalized invite link." };
@@ -26,12 +27,16 @@ const validateRsvp = (payload) => {
     return { error: "Please enter your name." };
   }
 
-  if (!Number.isInteger(guestCount) || guestCount < 1 || guestCount > 20) {
+  if (wantsToAttend && (!Number.isInteger(guestCount) || guestCount < 1 || guestCount > 20)) {
     return { error: "Please enter a guest count between 1 and 20." };
   }
 
-  if (!reception && !wedding) {
+  if (wantsToAttend && !reception && !wedding) {
     return { error: "Please select at least one event." };
+  }
+
+  if (!wantsToAttend && (!Number.isInteger(guestCount) || guestCount !== 0)) {
+    return { error: "Please choose whether you are joining us." };
   }
 
   return {
@@ -41,9 +46,9 @@ const validateRsvp = (payload) => {
       name,
       phone,
       email,
-      guestCount,
-      reception,
-      wedding,
+      guestCount: wantsToAttend ? guestCount : 0,
+      reception: wantsToAttend && reception,
+      wedding: wantsToAttend && wedding,
     },
   };
 };

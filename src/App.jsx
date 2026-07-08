@@ -189,7 +189,9 @@ const menuItems = [
   { href: "#top", label: "Home" },
   { href: "#events", label: "Events" },
   { href: "#venue", label: "Venue & RSVP" },
-  { href: "#itinerary", label: "Itinerary" },
+  { href: "#itinerary", label: "Functions" },
+  { label: "Live Stream", comingSoon: true },
+  { label: "Upload Photos", comingSoon: true },
 ];
 
 const emptyRsvp = {
@@ -198,6 +200,7 @@ const emptyRsvp = {
   phone: "",
   email: "",
   guestCount: "1",
+  isAttending: true,
   events: {
     reception: true,
     wedding: true,
@@ -266,7 +269,11 @@ function RsvpCard({ invite }) {
         }
 
         setSavedRsvp(rsvp);
-        setForm({ ...rsvp, guestCount: String(rsvp.guestCount) });
+        setForm({
+          ...rsvp,
+          isAttending: rsvp.events.reception || rsvp.events.wedding,
+          guestCount: String(rsvp.guestCount || 1),
+        });
         setIsEditing(false);
         setStatus("idle");
       })
@@ -298,6 +305,27 @@ function RsvpCard({ invite }) {
     }));
   };
 
+  const updateGuestCount = (direction) => {
+    setForm((current) => {
+      const currentCount = Number.parseInt(current.guestCount, 10) || 1;
+      const nextCount = Math.min(20, Math.max(1, currentCount + direction));
+
+      return { ...current, guestCount: String(nextCount) };
+    });
+  };
+
+  const updateAttendance = (isAttending) => {
+    setForm((current) => ({
+      ...current,
+      isAttending,
+      guestCount: isAttending ? current.guestCount || "1" : "0",
+      events: {
+        reception: Boolean(isAttending && invite?.invitedEvents.reception),
+        wedding: Boolean(isAttending && invite?.invitedEvents.wedding),
+      },
+    }));
+  };
+
   const saveRsvp = async (event) => {
     event.preventDefault();
     setStatus("saving");
@@ -310,7 +338,8 @@ function RsvpCard({ invite }) {
         body: JSON.stringify({
           ...form,
           inviteCode: invite?.inviteCode,
-          guestCount: Number.parseInt(form.guestCount, 10),
+          guestCount: form.isAttending ? Number.parseInt(form.guestCount, 10) : 0,
+          events: form.isAttending ? form.events : { reception: false, wedding: false },
         }),
       });
 
@@ -322,7 +351,11 @@ function RsvpCard({ invite }) {
 
       window.localStorage.setItem(storageKey, payload.rsvp.id);
       setSavedRsvp(payload.rsvp);
-      setForm({ ...payload.rsvp, guestCount: String(payload.rsvp.guestCount) });
+      setForm({
+        ...payload.rsvp,
+        isAttending: payload.rsvp.events.reception || payload.rsvp.events.wedding,
+        guestCount: String(payload.rsvp.guestCount || 1),
+      });
       setIsEditing(false);
       setStatus("idle");
       setMessage("Thank you! We've received your RSVP and can't wait to celebrate with you.");
@@ -352,14 +385,17 @@ function RsvpCard({ invite }) {
   }
 
   if (savedRsvp && !isEditing) {
+    const savedIsAttending = savedRsvp.events.reception || savedRsvp.events.wedding;
+
     return (
       <div className="rsvp-card rsvp-card--saved">
         <p className="rsvp-card__eyebrow">RSVP saved</p>
         <h3>Thank you for RSVPing!</h3>
         <dl className="rsvp-summary">
           <div><dt>Name</dt><dd>{savedRsvp.name}</dd></div>
-          <div><dt>Guests</dt><dd>{savedRsvp.guestCount}</dd></div>
-          {invitedRsvpEvents.map((rsvpEvent) => (
+          <div><dt>Joining</dt><dd>{savedIsAttending ? "Yes" : "No"}</dd></div>
+          {savedIsAttending && <div><dt>Guests</dt><dd>{savedRsvp.guestCount}</dd></div>}
+          {savedIsAttending && invitedRsvpEvents.map((rsvpEvent) => (
             <div key={rsvpEvent.id}>
               <dt>{rsvpEvent.title}</dt>
               <dd>{savedRsvp.events[rsvpEvent.id] ? "Attending" : "Not attending"}</dd>
@@ -377,20 +413,63 @@ function RsvpCard({ invite }) {
   return (
     <form className="rsvp-card" onSubmit={saveRsvp}>
       <p className="rsvp-card__eyebrow">RSVP</p>
-      <h3>Will you be joining us?</h3>
-      <p className="rsvp-card__intro">Please let us know which celebrations you will attend.</p>
+      <h3>Are you joining?</h3>
+      <p className="rsvp-card__intro">Please let us know if you will be able to celebrate with us.</p>
 
       <label className="rsvp-field">
         <span>Name</span>
         <input value={form.name} onChange={(event) => updateField("name", event.target.value)} required />
       </label>
 
-      <label className="rsvp-field">
-        <span>Number of guests</span>
-        <input type="number" min="1" max="20" value={form.guestCount} onChange={(event) => updateField("guestCount", event.target.value)} required />
-      </label>
-
       <fieldset className="rsvp-events">
+        <legend>Are you joining?</legend>
+        <label className="rsvp-event">
+          <input type="radio" name="isAttending" checked={form.isAttending} onChange={() => updateAttendance(true)} />
+          <span><strong>Yes, I will be there</strong></span>
+        </label>
+        <label className="rsvp-event">
+          <input type="radio" name="isAttending" checked={!form.isAttending} onChange={() => updateAttendance(false)} />
+          <span><strong>Sorry, I cannot make it</strong></span>
+        </label>
+      </fieldset>
+
+      {form.isAttending && <div className="rsvp-field">
+        <span id="guest-count-label">Number of guests</span>
+        <div className="guest-stepper">
+          <button
+            aria-label="Decrease guest count"
+            className="guest-stepper__button"
+            disabled={Number.parseInt(form.guestCount, 10) <= 1}
+            onClick={() => updateGuestCount(-1)}
+            type="button"
+          >
+            -
+          </button>
+          <input
+            aria-labelledby="guest-count-label"
+            aria-label="Number of guests"
+            inputMode="numeric"
+            max="20"
+            min="1"
+            pattern="[0-9]*"
+            type="number"
+            value={form.guestCount}
+            onChange={(event) => updateField("guestCount", event.target.value)}
+            required
+          />
+          <button
+            aria-label="Increase guest count"
+            className="guest-stepper__button"
+            disabled={Number.parseInt(form.guestCount, 10) >= 20}
+            onClick={() => updateGuestCount(1)}
+            type="button"
+          >
+            +
+          </button>
+        </div>
+      </div>}
+
+      {form.isAttending && <fieldset className="rsvp-events">
         <legend>Events attending</legend>
         {invitedRsvpEvents.map((rsvpEvent) => (
           <label className="rsvp-event" key={rsvpEvent.id}>
@@ -401,7 +480,7 @@ function RsvpCard({ invite }) {
             </span>
           </label>
         ))}
-      </fieldset>
+      </fieldset>}
 
       <button className="button" type="submit" disabled={status === "saving"}>
         {status === "saving" ? "Saving..." : "Submit RSVP"}
@@ -1078,7 +1157,14 @@ function FloatingMenu() {
     <nav className={`top-menu${isCompact ? " top-menu--compact" : ""}${isOpen ? " top-menu--open" : ""}`} aria-label="Wedding invite navigation">
       <div className="top-menu__panel" id="floating-menu-links" aria-hidden={isCompact && !isOpen}>
         {menuItems.map((item) => (
-          <a href={item.href} key={item.href} tabIndex={!isCompact || isOpen ? 0 : -1} onClick={() => setIsOpen(false)}>{item.label}</a>
+          item.comingSoon ? (
+            <span className="top-menu__coming-soon" key={item.label} title="Coming soon">
+              {item.label}
+              <small>soon</small>
+            </span>
+          ) : (
+            <a href={item.href} key={item.href} tabIndex={!isCompact || isOpen ? 0 : -1} onClick={() => setIsOpen(false)}>{item.label}</a>
+          )
         ))}
       </div>
       <button
