@@ -354,7 +354,13 @@ a {
   gap: 14px;
   margin-top: 34px;
 }
-
+.countdown-title {
+  text-align: center;
+  font-size: 0.9rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
 .countdown > div {
   min-width: clamp(88px, 9vw, 116px);
   padding: 18px 12px 16px;
