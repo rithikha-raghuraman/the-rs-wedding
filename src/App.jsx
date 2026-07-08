@@ -1311,11 +1311,9 @@ function App() {
             <span />
             <b>{weddingData.weddingDate}</b>
             <span />
+            
           </div>
-<div className="countdown-heading">
-  <p className="countdown-title">JOIN US IN</p>
-</div>
-
+<p className="countdown-title">JOIN US IN</p>
 <div className="countdown" aria-live="polite">
           <div className="countdown" aria-live="polite">
             <div><strong>{countdown.days}</strong><span>Days</span></div>
