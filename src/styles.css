@@ -352,7 +352,7 @@ a {
 .countdown {
   display: flex;
   gap: 14px;
-  margin-top: 34px;
+  margin-top: 65px;
 }
 .countdown-title {
   text-align: center;
