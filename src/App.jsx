@@ -1288,7 +1288,7 @@ function App() {
       <FloatingMenu />
       <section className="hero" id="top">
         <picture className="hero__picture" aria-hidden="true">
-          <img ref={heroImageRef} className="hero__temple" src="/hero-wedding-floral-v4.png" alt="" />
+          <img ref={heroImageRef} className="hero__temple" src="/ChatGPT Image Jul 8, 2026, 02_17_41 PM.png" alt="" />
         </picture>
         <div className="hero__wash" />
         <div className="hero__glow" />
