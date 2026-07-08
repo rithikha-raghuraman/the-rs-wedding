@@ -1297,36 +1297,39 @@ function App() {
         <div className="hero__legibility" />
 
         <div className="hero__content">
-          <p className="hero__ganesha">ॐ श्री गणेशाय नमः</p>
-          <p className="hero__overline">
-            {weddingData.heroLabel.map((line) => <span key={line}>{line}</span>)}
-          </p>
-          <h1>
-            <span>{couple[0]}</span>
-            <em>&amp;</em>
-            <span>{couple[1]}</span>
-          </h1>
-          <p className="hero__tamil">இரு குடும்பங்களின் வாழ்த்துகளுடன்</p>
-          <div className="hero__date">
-            <span />
-            <b>{weddingData.weddingDate}</b>
-            <span />
-            
-          </div>
-<p className="countdown-title">JOIN US IN</p>
-<div className="countdown" aria-live="polite">
-          <div className="countdown" aria-live="polite">
-            <div><strong>{countdown.days}</strong><span>Days</span></div>
-            <div><strong>{countdown.hours}</strong><span>Hours</span></div>
-            <div><strong>{countdown.minutes}</strong><span>Minutes</span></div>
-          </div>
-          <a className="scroll-invite" href="#events">
-            <span>Key events</span>
-            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 6 5 5 5-5" /></svg>
-          </a>
-        </div>
-      </section>
+  <p className="hero__ganesha">ॐ श्री गणेशाय नमः</p>
 
+  <p className="hero__overline">
+    {weddingData.heroLabel.map((line) => <span key={line}>{line}</span>)}
+  </p>
+
+  <h1>
+    <span>{couple[0]}</span>
+    <em>&amp;</em>
+    <span>{couple[1]}</span>
+  </h1>
+
+  <p className="hero__tamil">இரு குடும்பங்களின் வாழ்த்துகளுடன்</p>
+
+  <div className="hero__date">
+    <span />
+    <b>{weddingData.weddingDate}</b>
+    <span />
+  </div>
+
+  <p className="countdown-title">JOIN US IN</p>
+
+  <div className="countdown" aria-live="polite">
+    <div><strong>{countdown.days}</strong><span>Days</span></div>
+    <div><strong>{countdown.hours}</strong><span>Hours</span></div>
+    <div><strong>{countdown.minutes}</strong><span>Minutes</span></div>
+  </div>
+
+  <a className="scroll-invite" href="#events">
+    <span>Key events</span>
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 6 5 5 5-5" /></svg>
+  </a>
+</div>
       <main>
         <section className="section key-events" id="events">
           <div className="section__narrow" data-reveal>
