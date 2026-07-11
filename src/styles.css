@@ -436,9 +436,18 @@ a {
   margin-top: 0;
   padding-top: 82px;
   padding-bottom: 64px;
-  background:
-    radial-gradient(circle at 50% 10%, rgba(207, 111, 129, 0.15), transparent 34%),
-    linear-gradient(180deg, #fbf4ef 0%, #fff9f4 52%, #fbf4ef 100%);
+
+  background-image:
+    linear-gradient(
+      rgba(255, 250, 244, 0.68),
+      rgba(255, 250, 244, 0.68)
+    ),
+    url("/Celebrations.png");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
 }
 
 .key-events::before {
@@ -503,7 +512,16 @@ a {
 }
 
 .venue {
-  background: #f3eef7;
+  background-image:
+    linear-gradient(
+      rgba(246, 250, 243, 0.7),
+      rgba(246, 250, 243, 0.7)
+    ),
+    url("/Venue.png");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .ornament-divider {
