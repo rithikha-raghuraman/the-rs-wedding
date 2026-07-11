@@ -423,13 +423,22 @@ a {
   width: min(100%, 820px);
 }
 
-.key-events,
-.invitation,
 .itinerary,
 .story {
   background: #fbf4ef;
 }
+.invitation {
+  background-image:
+    linear-gradient(
+      rgba(255, 252, 244, 0.72),
+      rgba(255, 252, 244, 0.72)
+    ),
+    url("/Blessings.png");
 
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
 .key-events {
   position: relative;
   z-index: 6;
